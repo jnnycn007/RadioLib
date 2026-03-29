@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">6</td>
-            <td class="headerCovTableEntry">67</td>
-            <td class="headerCovTableEntryLo">9.0 %</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntry">69</td>
+            <td class="headerCovTableEntryLo">11.6 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2026-03-25 06:13:56</td>
+            <td class="headerValue">2026-03-29 14:18:40</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">2</td>
@@ -157,25 +157,27 @@
 <a name="95"><span class="lineNum">      95 </span>            : </a>
 <a name="96"><span class="lineNum">      96 </span><span class="lineCov">          1 : int16_t LR2021::setPaConfig(uint8_t pa, uint8_t paLfMode, uint8_t paLfDutyCycle, uint8_t paLfSlices, uint8_t paHfDutyCycle) {</span></a>
 <a name="97"><span class="lineNum">      97 </span>            :   uint8_t buff[] = {</a>
-<a name="98"><span class="lineNum">      98 </span><span class="lineCov">          1 :     (uint8_t)(pa &lt;&lt; 7), (uint8_t)(paLfMode &amp; 0x03), (uint8_t)(paLfDutyCycle &amp; 0xF0), (uint8_t)(paLfSlices &amp; 0x0F), (uint8_t)(paHfDutyCycle &amp; 0x1F),</span></a>
-<a name="99"><span class="lineNum">      99 </span><span class="lineCov">          1 :   };</span></a>
-<a name="100"><span class="lineNum">     100 </span><span class="lineCov">          2 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_PA_CONFIG, true, buff, sizeof(buff)));</span></a>
-<a name="101"><span class="lineNum">     101 </span>            : }</a>
-<a name="102"><span class="lineNum">     102 </span>            : </a>
-<a name="103"><span class="lineNum">     103 </span><span class="lineNoCov">          0 : int16_t LR2021::setTxParams(int8_t txPower, uint8_t rampTime) {</span></a>
-<a name="104"><span class="lineNum">     104 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { (uint8_t)(txPower * 2), rampTime };</span></a>
-<a name="105"><span class="lineNum">     105 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_TX_PARAMS, true, buff, sizeof(buff)));</span></a>
-<a name="106"><span class="lineNum">     106 </span>            : }</a>
-<a name="107"><span class="lineNum">     107 </span>            : </a>
-<a name="108"><span class="lineNum">     108 </span><span class="lineNoCov">          0 : int16_t LR2021::setPacketType(uint8_t packetType) {</span></a>
-<a name="109"><span class="lineNum">     109 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_PACKET_TYPE, true, &amp;packetType, sizeof(packetType)));</span></a>
-<a name="110"><span class="lineNum">     110 </span>            : }</a>
-<a name="111"><span class="lineNum">     111 </span>            : </a>
-<a name="112"><span class="lineNum">     112 </span><span class="lineCov">         24 : int16_t LR2021::getPacketType(uint8_t* packetType) {</span></a>
-<a name="113"><span class="lineNum">     113 </span><span class="lineCov">         24 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_PACKET_TYPE, false, packetType, sizeof(uint8_t)));</span></a>
-<a name="114"><span class="lineNum">     114 </span>            : }</a>
-<a name="115"><span class="lineNum">     115 </span>            : </a>
-<a name="116"><span class="lineNum">     116 </span>            : #endif</a>
+<a name="98"><span class="lineNum">      98 </span><span class="lineCov">          1 :     (uint8_t)((pa &lt;&lt; 7) | (paLfMode &amp; 0x03)), </span></a>
+<a name="99"><span class="lineNum">      99 </span><span class="lineCov">          1 :     (uint8_t)(((paLfDutyCycle &amp; 0x0F) &lt;&lt; 4) | (paLfSlices &amp; 0x0F)),</span></a>
+<a name="100"><span class="lineNum">     100 </span><span class="lineCov">          1 :     (uint8_t)((paHfDutyCycle &amp; 0x1F)),</span></a>
+<a name="101"><span class="lineNum">     101 </span><span class="lineCov">          1 :   };</span></a>
+<a name="102"><span class="lineNum">     102 </span><span class="lineCov">          2 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_PA_CONFIG, true, buff, sizeof(buff)));</span></a>
+<a name="103"><span class="lineNum">     103 </span>            : }</a>
+<a name="104"><span class="lineNum">     104 </span>            : </a>
+<a name="105"><span class="lineNum">     105 </span><span class="lineNoCov">          0 : int16_t LR2021::setTxParams(int8_t txPower, uint8_t rampTime) {</span></a>
+<a name="106"><span class="lineNum">     106 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { (uint8_t)(txPower * 2), rampTime };</span></a>
+<a name="107"><span class="lineNum">     107 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_TX_PARAMS, true, buff, sizeof(buff)));</span></a>
+<a name="108"><span class="lineNum">     108 </span>            : }</a>
+<a name="109"><span class="lineNum">     109 </span>            : </a>
+<a name="110"><span class="lineNum">     110 </span><span class="lineNoCov">          0 : int16_t LR2021::setPacketType(uint8_t packetType) {</span></a>
+<a name="111"><span class="lineNum">     111 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_PACKET_TYPE, true, &amp;packetType, sizeof(packetType)));</span></a>
+<a name="112"><span class="lineNum">     112 </span>            : }</a>
+<a name="113"><span class="lineNum">     113 </span>            : </a>
+<a name="114"><span class="lineNum">     114 </span><span class="lineCov">         24 : int16_t LR2021::getPacketType(uint8_t* packetType) {</span></a>
+<a name="115"><span class="lineNum">     115 </span><span class="lineCov">         24 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_PACKET_TYPE, false, packetType, sizeof(uint8_t)));</span></a>
+<a name="116"><span class="lineNum">     116 </span>            : }</a>
+<a name="117"><span class="lineNum">     117 </span>            : </a>
+<a name="118"><span class="lineNum">     118 </span>            : #endif</a>
 </pre>
       </td>
     </tr>
