@@ -32,12 +32,12 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">21</td>
-            <td class="headerCovTableEntry">193</td>
-            <td class="headerCovTableEntryLo">10.9 %</td>
+            <td class="headerCovTableEntry">197</td>
+            <td class="headerCovTableEntryLo">10.7 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2026-08-09 12:48:44</td>
+            <td class="headerValue">2026-08-12 06:57:35</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">5</td>
@@ -224,7 +224,7 @@
 <a name="162"><span class="lineNum">     162 </span>            : }</a>
 <a name="163"><span class="lineNum">     163 </span>            : </a>
 <a name="164"><span class="lineNum">     164 </span><span class="lineNoCov">          0 : int16_t LR2021::getVbat(uint8_t resolution, uint16_t* vbat) {</span></a>
-<a name="165"><span class="lineNum">     165 </span><span class="lineNoCov">          0 :   uint8_t reqBuff[] = { (uint8_t)(RADIOLIB_LR2021_VBAT_FORMAT_MV | ((RADIOLIB_LR2021_MEAS_RESOLUTION_OFFSET + resolution) &amp; 0x07)) };</span></a>
+<a name="165"><span class="lineNum">     165 </span><span class="lineNoCov">          0 :   uint8_t reqBuff[] = { (uint8_t)(RADIOLIB_LR2021_VBAT_FORMAT_MV | ((resolution - RADIOLIB_LR2021_MEAS_RESOLUTION_OFFSET) &amp; 0x07)) };</span></a>
 <a name="166"><span class="lineNum">     166 </span><span class="lineNoCov">          0 :   uint8_t rplBuff[2] = { 0 };</span></a>
 <a name="167"><span class="lineNum">     167 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_V_BAT, false, rplBuff, sizeof(rplBuff), reqBuff, sizeof(reqBuff));</span></a>
 <a name="168"><span class="lineNum">     168 </span><span class="lineNoCov">          0 :   if(vbat) { *vbat = ((uint16_t)(rplBuff[0]) &lt;&lt; 8) | (uint16_t)rplBuff[1]; }</span></a>
@@ -232,7 +232,7 @@
 <a name="170"><span class="lineNum">     170 </span>            : }</a>
 <a name="171"><span class="lineNum">     171 </span>            : </a>
 <a name="172"><span class="lineNum">     172 </span><span class="lineNoCov">          0 : int16_t LR2021::getTemp(uint8_t source, uint8_t resolution, float* temp) {</span></a>
-<a name="173"><span class="lineNum">     173 </span><span class="lineNoCov">          0 :   uint8_t reqBuff[] = { (uint8_t)((source &amp; 0x30) | RADIOLIB_LR2021_TEMP_FORMAT_DEG_C | ((RADIOLIB_LR2021_MEAS_RESOLUTION_OFFSET + resolution) &amp; 0x07)) };</span></a>
+<a name="173"><span class="lineNum">     173 </span><span class="lineNoCov">          0 :   uint8_t reqBuff[] = { (uint8_t)((source &amp; 0x30) | RADIOLIB_LR2021_TEMP_FORMAT_DEG_C | ((resolution - RADIOLIB_LR2021_MEAS_RESOLUTION_OFFSET) &amp; 0x07)) };</span></a>
 <a name="174"><span class="lineNum">     174 </span><span class="lineNoCov">          0 :   uint8_t rplBuff[2] = { 0 };</span></a>
 <a name="175"><span class="lineNum">     175 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_TEMP, false, rplBuff, sizeof(rplBuff), reqBuff, sizeof(reqBuff));</span></a>
 <a name="176"><span class="lineNum">     176 </span><span class="lineNoCov">          0 :   if(temp) { </span></a>
@@ -302,95 +302,106 @@
 <a name="240"><span class="lineNum">     240 </span><span class="lineNoCov">          0 :   return(state);</span></a>
 <a name="241"><span class="lineNum">     241 </span>            : }</a>
 <a name="242"><span class="lineNum">     242 </span>            : </a>
-<a name="243"><span class="lineNum">     243 </span><span class="lineNoCov">          0 : int16_t LR2021::configFifoIrq(uint8_t rxFifoIrq, uint8_t txFifoIrq, uint8_t rxHighThreshold, uint8_t txHighThreshold) {</span></a>
-<a name="244"><span class="lineNum">     244 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { rxFifoIrq, txFifoIrq, rxHighThreshold, txHighThreshold };</span></a>
-<a name="245"><span class="lineNum">     245 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CONFIG_FIFO_IRQ, true, buff, sizeof(buff)));</span></a>
-<a name="246"><span class="lineNum">     246 </span>            : }</a>
-<a name="247"><span class="lineNum">     247 </span>            : </a>
-<a name="248"><span class="lineNum">     248 </span><span class="lineNoCov">          0 : int16_t LR2021::getFifoIrqFlags(uint8_t* rxFifoFlags, uint8_t* txFifoFlags) {</span></a>
-<a name="249"><span class="lineNum">     249 </span><span class="lineNoCov">          0 :   uint8_t buff[2] = { 0 };</span></a>
-<a name="250"><span class="lineNum">     250 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_FIFO_IRQ_FLAGS, false, buff, sizeof(buff));</span></a>
-<a name="251"><span class="lineNum">     251 </span><span class="lineNoCov">          0 :   if(rxFifoFlags) { *rxFifoFlags = buff[0]; }</span></a>
-<a name="252"><span class="lineNum">     252 </span><span class="lineNoCov">          0 :   if(txFifoFlags) { *txFifoFlags = buff[1]; }</span></a>
-<a name="253"><span class="lineNum">     253 </span><span class="lineNoCov">          0 :   return(state);</span></a>
-<a name="254"><span class="lineNum">     254 </span>            : }</a>
-<a name="255"><span class="lineNum">     255 </span>            : </a>
-<a name="256"><span class="lineNum">     256 </span><span class="lineNoCov">          0 : int16_t LR2021::clearFifoIrqFlags(uint8_t rxFifoFlags, uint8_t txFifoFlags) {</span></a>
-<a name="257"><span class="lineNum">     257 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { rxFifoFlags, txFifoFlags };</span></a>
-<a name="258"><span class="lineNum">     258 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CLEAR_FIFO_IRQ_FLAGS, true, buff, sizeof(buff)));</span></a>
-<a name="259"><span class="lineNum">     259 </span>            : }</a>
-<a name="260"><span class="lineNum">     260 </span>            : </a>
-<a name="261"><span class="lineNum">     261 </span><span class="lineNoCov">          0 : int16_t LR2021::getAndClearFifoIrqFlags(uint8_t* rxFifoFlags, uint8_t* txFifoFlags) {</span></a>
-<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :   uint8_t buff[2] = { 0 };</span></a>
-<a name="263"><span class="lineNum">     263 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_AND_CLEAR_FIFO_IRQ_FLAGS, false, buff, sizeof(buff));</span></a>
-<a name="264"><span class="lineNum">     264 </span><span class="lineNoCov">          0 :   if(rxFifoFlags) { *rxFifoFlags = buff[0]; }</span></a>
-<a name="265"><span class="lineNum">     265 </span><span class="lineNoCov">          0 :   if(txFifoFlags) { *txFifoFlags = buff[1]; }</span></a>
-<a name="266"><span class="lineNum">     266 </span><span class="lineNoCov">          0 :   return(state);</span></a>
-<a name="267"><span class="lineNum">     267 </span>            : }</a>
-<a name="268"><span class="lineNum">     268 </span>            : </a>
-<a name="269"><span class="lineNum">     269 </span><span class="lineNoCov">          0 : int16_t LR2021::getRxFifoLevel(uint16_t* level) {</span></a>
-<a name="270"><span class="lineNum">     270 </span><span class="lineNoCov">          0 :   uint8_t buff[2] = { 0 };</span></a>
-<a name="271"><span class="lineNum">     271 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_RX_FIFO_LEVEL, false, buff, sizeof(buff));</span></a>
-<a name="272"><span class="lineNum">     272 </span><span class="lineNoCov">          0 :   if(level) { *level = ((uint16_t)(buff[0]) &lt;&lt; 8) | (uint16_t)buff[1];  }</span></a>
-<a name="273"><span class="lineNum">     273 </span><span class="lineNoCov">          0 :   return(state);</span></a>
-<a name="274"><span class="lineNum">     274 </span>            : }</a>
-<a name="275"><span class="lineNum">     275 </span>            : </a>
-<a name="276"><span class="lineNum">     276 </span><span class="lineNoCov">          0 : int16_t LR2021::getTxFifoLevel(uint16_t* level) {</span></a>
-<a name="277"><span class="lineNum">     277 </span><span class="lineNoCov">          0 :   uint8_t buff[2] = { 0 };</span></a>
-<a name="278"><span class="lineNum">     278 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_TX_FIFO_LEVEL, false, buff, sizeof(buff));</span></a>
-<a name="279"><span class="lineNum">     279 </span><span class="lineNoCov">          0 :   if(level) { *level = ((uint16_t)(buff[0]) &lt;&lt; 8) | (uint16_t)buff[1];  }</span></a>
-<a name="280"><span class="lineNum">     280 </span><span class="lineNoCov">          0 :   return(state);</span></a>
-<a name="281"><span class="lineNum">     281 </span>            : }</a>
-<a name="282"><span class="lineNum">     282 </span>            : </a>
-<a name="283"><span class="lineNum">     283 </span><span class="lineNoCov">          0 : int16_t LR2021::clearRxFifo(void) {</span></a>
-<a name="284"><span class="lineNum">     284 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CLEAR_RX_FIFO, true, NULL, 0));</span></a>
+<a name="243"><span class="lineNum">     243 </span><span class="lineNoCov">          0 : int16_t LR2021::configFifoIrq(uint8_t rxFifoIrq, uint8_t txFifoIrq, uint16_t rxHighThreshold, uint16_t txLowThreshold, uint16_t rxLowThreshold, uint16_t txHighThreshold) {</span></a>
+<a name="244"><span class="lineNum">     244 </span>            :   uint8_t buff[] = {</a>
+<a name="245"><span class="lineNum">     245 </span>            :         rxFifoIrq,</a>
+<a name="246"><span class="lineNum">     246 </span>            :         txFifoIrq,</a>
+<a name="247"><span class="lineNum">     247 </span><span class="lineNoCov">          0 :         (uint8_t)((rxHighThreshold &gt;&gt; 8) &amp; 0xFF),</span></a>
+<a name="248"><span class="lineNum">     248 </span>            :         (uint8_t)(rxHighThreshold &amp; 0xFF),</a>
+<a name="249"><span class="lineNum">     249 </span><span class="lineNoCov">          0 :         (uint8_t)((txLowThreshold &gt;&gt; 8) &amp; 0xFF),</span></a>
+<a name="250"><span class="lineNum">     250 </span>            :         (uint8_t)(txLowThreshold &amp; 0xFF),</a>
+<a name="251"><span class="lineNum">     251 </span><span class="lineNoCov">          0 :         (uint8_t)((rxLowThreshold &gt;&gt; 8) &amp; 0xFF),</span></a>
+<a name="252"><span class="lineNum">     252 </span>            :         (uint8_t)(rxLowThreshold &amp; 0xFF),</a>
+<a name="253"><span class="lineNum">     253 </span><span class="lineNoCov">          0 :         (uint8_t)((txHighThreshold &gt;&gt; 8) &amp; 0xFF),</span></a>
+<a name="254"><span class="lineNum">     254 </span>            :         (uint8_t)(txHighThreshold &amp; 0xFF),</a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineNoCov">          0 :         };</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CONFIG_FIFO_IRQ, true, buff, sizeof(buff)));</span></a>
+<a name="257"><span class="lineNum">     257 </span>            : }</a>
+<a name="258"><span class="lineNum">     258 </span>            : </a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineNoCov">          0 : int16_t LR2021::getFifoIrqFlags(uint8_t* rxFifoFlags, uint8_t* txFifoFlags) {</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineNoCov">          0 :   uint8_t buff[2] = { 0 };</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_FIFO_IRQ_FLAGS, false, buff, sizeof(buff));</span></a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineNoCov">          0 :   if(rxFifoFlags) { *rxFifoFlags = buff[0]; }</span></a>
+<a name="263"><span class="lineNum">     263 </span><span class="lineNoCov">          0 :   if(txFifoFlags) { *txFifoFlags = buff[1]; }</span></a>
+<a name="264"><span class="lineNum">     264 </span><span class="lineNoCov">          0 :   return(state);</span></a>
+<a name="265"><span class="lineNum">     265 </span>            : }</a>
+<a name="266"><span class="lineNum">     266 </span>            : </a>
+<a name="267"><span class="lineNum">     267 </span><span class="lineNoCov">          0 : int16_t LR2021::clearFifoIrqFlags(uint8_t rxFifoFlags, uint8_t txFifoFlags) {</span></a>
+<a name="268"><span class="lineNum">     268 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { rxFifoFlags, txFifoFlags };</span></a>
+<a name="269"><span class="lineNum">     269 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CLEAR_FIFO_IRQ_FLAGS, true, buff, sizeof(buff)));</span></a>
+<a name="270"><span class="lineNum">     270 </span>            : }</a>
+<a name="271"><span class="lineNum">     271 </span>            : </a>
+<a name="272"><span class="lineNum">     272 </span><span class="lineNoCov">          0 : int16_t LR2021::getAndClearFifoIrqFlags(uint8_t* rxFifoFlags, uint8_t* txFifoFlags) {</span></a>
+<a name="273"><span class="lineNum">     273 </span><span class="lineNoCov">          0 :   uint8_t buff[2] = { 0 };</span></a>
+<a name="274"><span class="lineNum">     274 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_AND_CLEAR_FIFO_IRQ_FLAGS, false, buff, sizeof(buff));</span></a>
+<a name="275"><span class="lineNum">     275 </span><span class="lineNoCov">          0 :   if(rxFifoFlags) { *rxFifoFlags = buff[0]; }</span></a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineNoCov">          0 :   if(txFifoFlags) { *txFifoFlags = buff[1]; }</span></a>
+<a name="277"><span class="lineNum">     277 </span><span class="lineNoCov">          0 :   return(state);</span></a>
+<a name="278"><span class="lineNum">     278 </span>            : }</a>
+<a name="279"><span class="lineNum">     279 </span>            : </a>
+<a name="280"><span class="lineNum">     280 </span><span class="lineNoCov">          0 : int16_t LR2021::getRxFifoLevel(uint16_t* level) {</span></a>
+<a name="281"><span class="lineNum">     281 </span><span class="lineNoCov">          0 :   uint8_t buff[2] = { 0 };</span></a>
+<a name="282"><span class="lineNum">     282 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_RX_FIFO_LEVEL, false, buff, sizeof(buff));</span></a>
+<a name="283"><span class="lineNum">     283 </span><span class="lineNoCov">          0 :   if(level) { *level = ((uint16_t)(buff[0]) &lt;&lt; 8) | (uint16_t)buff[1];  }</span></a>
+<a name="284"><span class="lineNum">     284 </span><span class="lineNoCov">          0 :   return(state);</span></a>
 <a name="285"><span class="lineNum">     285 </span>            : }</a>
 <a name="286"><span class="lineNum">     286 </span>            : </a>
-<a name="287"><span class="lineNum">     287 </span><span class="lineNoCov">          0 : int16_t LR2021::clearTxFifo(void) {</span></a>
-<a name="288"><span class="lineNum">     288 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CLEAR_TX_FIFO, true, NULL, 0));</span></a>
-<a name="289"><span class="lineNum">     289 </span>            : }</a>
-<a name="290"><span class="lineNum">     290 </span>            : </a>
-<a name="291"><span class="lineNum">     291 </span><span class="lineNoCov">          0 : int16_t LR2021::configLfClock(uint8_t cfg) {</span></a>
-<a name="292"><span class="lineNum">     292 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CONFIG_LF_CLOCK, true, &amp;cfg, sizeof(cfg)));</span></a>
-<a name="293"><span class="lineNum">     293 </span>            : }</a>
-<a name="294"><span class="lineNum">     294 </span>            : </a>
-<a name="295"><span class="lineNum">     295 </span><span class="lineNoCov">          0 : int16_t LR2021::configClkOutputs(uint8_t scaling) {</span></a>
-<a name="296"><span class="lineNum">     296 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CONFIG_CLK_OUTPUTS, true, &amp;scaling, sizeof(scaling)));</span></a>
-<a name="297"><span class="lineNum">     297 </span>            : }</a>
-<a name="298"><span class="lineNum">     298 </span>            : </a>
-<a name="299"><span class="lineNum">     299 </span><span class="lineNoCov">          0 : int16_t LR2021::setTcxoMode(uint8_t tune, uint32_t startTime) {</span></a>
-<a name="300"><span class="lineNum">     300 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { (uint8_t)(tune &amp; 0x07),</span></a>
-<a name="301"><span class="lineNum">     301 </span><span class="lineNoCov">          0 :     (uint8_t)((startTime &gt;&gt; 24) &amp; 0xFF), (uint8_t)((startTime &gt;&gt; 16) &amp; 0xFF),</span></a>
-<a name="302"><span class="lineNum">     302 </span><span class="lineNoCov">          0 :     (uint8_t)((startTime &gt;&gt; 8) &amp; 0xFF), (uint8_t)(startTime &amp; 0xFF),</span></a>
-<a name="303"><span class="lineNum">     303 </span><span class="lineNoCov">          0 :   };</span></a>
-<a name="304"><span class="lineNum">     304 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_TCXO_MODE, true, buff, sizeof(buff)));</span></a>
-<a name="305"><span class="lineNum">     305 </span>            : }</a>
-<a name="306"><span class="lineNum">     306 </span>            : </a>
-<a name="307"><span class="lineNum">     307 </span><span class="lineNoCov">          0 : int16_t LR2021::setXoscCpTrim(uint8_t xta, uint8_t xtb, uint8_t startTime) {</span></a>
-<a name="308"><span class="lineNum">     308 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { (uint8_t)(xta &amp; 0x3F), (uint8_t)(xtb &amp; 0x3F), startTime };</span></a>
-<a name="309"><span class="lineNum">     309 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_XOSC_CP_TRIM, true, buff, sizeof(buff)));</span></a>
-<a name="310"><span class="lineNum">     310 </span>            : }</a>
-<a name="311"><span class="lineNum">     311 </span>            : </a>
-<a name="312"><span class="lineNum">     312 </span><span class="lineNoCov">          0 : int16_t LR2021::activatePram(void) {</span></a>
-<a name="313"><span class="lineNum">     313 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { RADIOLIB_LR2021_CMD_NOP };</span></a>
-<a name="314"><span class="lineNum">     314 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_ACTIVATE_PRAM, true, buff, sizeof(buff)));</span></a>
-<a name="315"><span class="lineNum">     315 </span>            : }</a>
-<a name="316"><span class="lineNum">     316 </span>            : </a>
-<a name="317"><span class="lineNum">     317 </span><span class="lineNoCov">          0 : int16_t LR2021::checkPramLoaded(bool* loaded) {</span></a>
-<a name="318"><span class="lineNum">     318 </span><span class="lineNoCov">          0 :   uint32_t val = 0;</span></a>
-<a name="319"><span class="lineNum">     319 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;readRegMem32(RADIOLIB_LR2021_PRAM_ADDR_LOADED, &amp;val, 1);</span></a>
-<a name="320"><span class="lineNum">     320 </span><span class="lineNoCov">          0 :   if(loaded) { *loaded = (val == RADIOLIB_LR2021_PRAM_LOADED_MAGIC);  }</span></a>
-<a name="321"><span class="lineNum">     321 </span><span class="lineNoCov">          0 :   return(state);</span></a>
-<a name="322"><span class="lineNum">     322 </span>            : }</a>
-<a name="323"><span class="lineNum">     323 </span>            : </a>
-<a name="324"><span class="lineNum">     324 </span><span class="lineNoCov">          0 : int16_t LR2021::getPramVersion(uint16_t* version) {</span></a>
-<a name="325"><span class="lineNum">     325 </span><span class="lineNoCov">          0 :   uint32_t val = 0;</span></a>
-<a name="326"><span class="lineNum">     326 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;readRegMem32(RADIOLIB_LR2021_PRAM_ADDR_VERSION, &amp;val, 1);</span></a>
-<a name="327"><span class="lineNum">     327 </span><span class="lineNoCov">          0 :   if(version) { *version = ((val &gt;&gt;8) &amp; 0xFFFF);  }</span></a>
-<a name="328"><span class="lineNum">     328 </span><span class="lineNoCov">          0 :   return(state);</span></a>
-<a name="329"><span class="lineNum">     329 </span>            : }</a>
-<a name="330"><span class="lineNum">     330 </span>            : </a>
-<a name="331"><span class="lineNum">     331 </span>            : #endif</a>
+<a name="287"><span class="lineNum">     287 </span><span class="lineNoCov">          0 : int16_t LR2021::getTxFifoLevel(uint16_t* level) {</span></a>
+<a name="288"><span class="lineNum">     288 </span><span class="lineNoCov">          0 :   uint8_t buff[2] = { 0 };</span></a>
+<a name="289"><span class="lineNum">     289 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_GET_TX_FIFO_LEVEL, false, buff, sizeof(buff));</span></a>
+<a name="290"><span class="lineNum">     290 </span><span class="lineNoCov">          0 :   if(level) { *level = ((uint16_t)(buff[0]) &lt;&lt; 8) | (uint16_t)buff[1];  }</span></a>
+<a name="291"><span class="lineNum">     291 </span><span class="lineNoCov">          0 :   return(state);</span></a>
+<a name="292"><span class="lineNum">     292 </span>            : }</a>
+<a name="293"><span class="lineNum">     293 </span>            : </a>
+<a name="294"><span class="lineNum">     294 </span><span class="lineNoCov">          0 : int16_t LR2021::clearRxFifo(void) {</span></a>
+<a name="295"><span class="lineNum">     295 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CLEAR_RX_FIFO, true, NULL, 0));</span></a>
+<a name="296"><span class="lineNum">     296 </span>            : }</a>
+<a name="297"><span class="lineNum">     297 </span>            : </a>
+<a name="298"><span class="lineNum">     298 </span><span class="lineNoCov">          0 : int16_t LR2021::clearTxFifo(void) {</span></a>
+<a name="299"><span class="lineNum">     299 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CLEAR_TX_FIFO, true, NULL, 0));</span></a>
+<a name="300"><span class="lineNum">     300 </span>            : }</a>
+<a name="301"><span class="lineNum">     301 </span>            : </a>
+<a name="302"><span class="lineNum">     302 </span><span class="lineNoCov">          0 : int16_t LR2021::configLfClock(uint8_t cfg) {</span></a>
+<a name="303"><span class="lineNum">     303 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CONFIG_LF_CLOCK, true, &amp;cfg, sizeof(cfg)));</span></a>
+<a name="304"><span class="lineNum">     304 </span>            : }</a>
+<a name="305"><span class="lineNum">     305 </span>            : </a>
+<a name="306"><span class="lineNum">     306 </span><span class="lineNoCov">          0 : int16_t LR2021::configClkOutputs(uint8_t scaling) {</span></a>
+<a name="307"><span class="lineNum">     307 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_CONFIG_CLK_OUTPUTS, true, &amp;scaling, sizeof(scaling)));</span></a>
+<a name="308"><span class="lineNum">     308 </span>            : }</a>
+<a name="309"><span class="lineNum">     309 </span>            : </a>
+<a name="310"><span class="lineNum">     310 </span><span class="lineNoCov">          0 : int16_t LR2021::setTcxoMode(uint8_t tune, uint32_t startTime) {</span></a>
+<a name="311"><span class="lineNum">     311 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { (uint8_t)(tune &amp; 0x07),</span></a>
+<a name="312"><span class="lineNum">     312 </span><span class="lineNoCov">          0 :     (uint8_t)((startTime &gt;&gt; 24) &amp; 0xFF), (uint8_t)((startTime &gt;&gt; 16) &amp; 0xFF),</span></a>
+<a name="313"><span class="lineNum">     313 </span><span class="lineNoCov">          0 :     (uint8_t)((startTime &gt;&gt; 8) &amp; 0xFF), (uint8_t)(startTime &amp; 0xFF),</span></a>
+<a name="314"><span class="lineNum">     314 </span><span class="lineNoCov">          0 :   };</span></a>
+<a name="315"><span class="lineNum">     315 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_TCXO_MODE, true, buff, sizeof(buff)));</span></a>
+<a name="316"><span class="lineNum">     316 </span>            : }</a>
+<a name="317"><span class="lineNum">     317 </span>            : </a>
+<a name="318"><span class="lineNum">     318 </span><span class="lineNoCov">          0 : int16_t LR2021::setXoscCpTrim(uint8_t xta, uint8_t xtb, uint8_t startTime) {</span></a>
+<a name="319"><span class="lineNum">     319 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { (uint8_t)(xta &amp; 0x3F), (uint8_t)(xtb &amp; 0x3F), startTime };</span></a>
+<a name="320"><span class="lineNum">     320 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_SET_XOSC_CP_TRIM, true, buff, sizeof(buff)));</span></a>
+<a name="321"><span class="lineNum">     321 </span>            : }</a>
+<a name="322"><span class="lineNum">     322 </span>            : </a>
+<a name="323"><span class="lineNum">     323 </span><span class="lineNoCov">          0 : int16_t LR2021::activatePram(void) {</span></a>
+<a name="324"><span class="lineNum">     324 </span><span class="lineNoCov">          0 :   uint8_t buff[] = { RADIOLIB_LR2021_CMD_NOP };</span></a>
+<a name="325"><span class="lineNum">     325 </span><span class="lineNoCov">          0 :   return(this-&gt;SPIcommand(RADIOLIB_LR2021_CMD_ACTIVATE_PRAM, true, buff, sizeof(buff)));</span></a>
+<a name="326"><span class="lineNum">     326 </span>            : }</a>
+<a name="327"><span class="lineNum">     327 </span>            : </a>
+<a name="328"><span class="lineNum">     328 </span><span class="lineNoCov">          0 : int16_t LR2021::checkPramLoaded(bool* loaded) {</span></a>
+<a name="329"><span class="lineNum">     329 </span><span class="lineNoCov">          0 :   uint32_t val = 0;</span></a>
+<a name="330"><span class="lineNum">     330 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;readRegMem32(RADIOLIB_LR2021_PRAM_ADDR_LOADED, &amp;val, 1);</span></a>
+<a name="331"><span class="lineNum">     331 </span><span class="lineNoCov">          0 :   if(loaded) { *loaded = (val == RADIOLIB_LR2021_PRAM_LOADED_MAGIC);  }</span></a>
+<a name="332"><span class="lineNum">     332 </span><span class="lineNoCov">          0 :   return(state);</span></a>
+<a name="333"><span class="lineNum">     333 </span>            : }</a>
+<a name="334"><span class="lineNum">     334 </span>            : </a>
+<a name="335"><span class="lineNum">     335 </span><span class="lineNoCov">          0 : int16_t LR2021::getPramVersion(uint16_t* version) {</span></a>
+<a name="336"><span class="lineNum">     336 </span><span class="lineNoCov">          0 :   uint32_t val = 0;</span></a>
+<a name="337"><span class="lineNum">     337 </span><span class="lineNoCov">          0 :   int16_t state = this-&gt;readRegMem32(RADIOLIB_LR2021_PRAM_ADDR_VERSION, &amp;val, 1);</span></a>
+<a name="338"><span class="lineNum">     338 </span><span class="lineNoCov">          0 :   if(version) { *version = ((val &gt;&gt;8) &amp; 0xFFFF);  }</span></a>
+<a name="339"><span class="lineNum">     339 </span><span class="lineNoCov">          0 :   return(state);</span></a>
+<a name="340"><span class="lineNum">     340 </span>            : }</a>
+<a name="341"><span class="lineNum">     341 </span>            : </a>
+<a name="342"><span class="lineNum">     342 </span>            : #endif</a>
 </pre>
       </td>
     </tr>
